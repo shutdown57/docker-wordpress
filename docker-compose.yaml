@@ -1,0 +1,97 @@
+version: "3"
+
+services:
+  web:
+    image: wordpress:4.8-apache
+    # other configs for wordpress
+    volumes:
+      - ./data/wordpress:/var/www/html
+  ftp:
+    # optionally replace username/repo:tag with your name and image details
+    image: stilliard/pure-ftpd:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      # PUBLICHOST: xxx.xxx.xxx.xxx # TODO for production stage
+      FTP_USER_NAME: "sam" # TODO change to your user
+      FTP_USER_PASS: "password"
+      FTP_USER_HOME: "/var/www/html"
+      FTP_USER_UID: 33
+      FTP_USER_GID: 33
+    volumes:
+      - ./data/wordpress:/var/www/html
+      - ./data/ftp:/etc/ssl/private
+    ports:
+      - target: 21
+        published: 21
+        protocol: tcp
+        mode: host
+      - target: 30000
+        published: 30000
+        protocol: tcp
+        mode: host
+      - target: 30001
+        published: 30001
+        protocol: tcp
+        mode: host
+      - target: 30002
+        published: 30002
+        protocol: tcp
+        mode: host
+      - target: 30003
+        published: 30003
+        protocol: tcp
+        mode: host
+      - target: 30004
+        published: 30004
+        protocol: tcp
+        mode: host
+      - target: 30005
+        published: 30005
+        protocol: tcp
+        mode: host
+      - target: 30006
+        published: 30006
+        protocol: tcp
+        mode: host
+      - target: 30007
+        published: 30007
+        protocol: tcp
+        mode: host
+      - target: 30008
+        published: 30008
+        protocol: tcp
+        mode: host
+      - target: 30009
+        published: 30009
+        protocol: tcp
+        mode: host
+  db:
+    image: mysql:latest
+    ports: 
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: test
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d
+      - dbdata:/var/lib/mysql
+    networks:
+      - default
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links: 
+      - db:db
+    ports:
+      - 8000:80
+    environment:
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: test
+
+volumes:
+  dbdata:

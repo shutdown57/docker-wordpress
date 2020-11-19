@@ -1,0 +1,5 @@
+.git/
+dump/
+www/
+data/
+Dockerfile
